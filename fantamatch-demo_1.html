@@ -1,0 +1,2533 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FantaMatch - Demo Animata</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            height: 100vh;
+            position: relative;
+            padding: 40px;
+        }
+
+        .scene {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            transition: opacity 0.8s ease;
+        }
+
+        .scene.active {
+            opacity: 1;
+        }
+
+        /* Logo */
+        .logo {
+            font-size: 64px;
+            font-weight: bold;
+            color: #10b981;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            animation: logoAppear 1s ease;
+        }
+
+        @keyframes logoAppear {
+            from {
+                transform: scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1) rotate(1080deg);
+                opacity: 1;
+            }
+        }
+
+        .trophy-icon {
+            font-size: 80px;
+        }
+
+        /* Title animations */
+        .title {
+            font-size: 48px;
+            font-weight: bold;
+            color: #059669;
+            text-align: center;
+            margin: 30px 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .title.fade-out {
+            opacity: 0;
+        }
+
+        .subtitle {
+            font-size: 32px;
+            color: #666;
+            text-align: center;
+            animation: fadeIn 1s ease 0.3s both;
+        }
+
+        /* Disable automatic animation for result subtitles - controlled by JS */
+        .result-container .subtitle {
+            animation: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Form creation */
+        .form-card {
+            background: white;
+            padding: 50px;
+            border-radius: 25px;
+            box-shadow: 0 10px 40px rgba(16, 185, 129, 0.2);
+            min-width: 600px;
+            animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative;
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .form-title {
+            font-size: 36px;
+            color: #10b981;
+            margin-bottom: 25px;
+            font-weight: bold;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 18px;
+            margin: 12px 0;
+            border: 2px solid #d1fae5;
+            border-radius: 12px;
+            font-size: 20px;
+        }
+
+        .create-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 22px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 25px;
+            transition: transform 0.2s;
+            position: relative;
+        }
+
+        .create-btn.clicked {
+            animation: buttonClick 0.3s ease;
+        }
+
+        @keyframes buttonClick {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+
+        .form-cursor {
+            position: absolute;
+            font-size: 50px;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 100;
+            transition: all 0.5s ease;
+        }
+
+        /* Code display */
+        .code-box {
+            background: white;
+            padding: 80px;
+            border-radius: 35px;
+            box-shadow: 0 20px 60px rgba(16, 185, 129, 0.3);
+            text-align: center;
+            animation: bounceIn 0.8s ease;
+            transition: all 0.8s ease;
+        }
+
+        .code-box.shrink {
+            transform: scale(0.5);
+            opacity: 0.8;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .code-label {
+            font-size: 28px;
+            color: #666;
+            margin-bottom: 25px;
+            transition: opacity 0.5s ease;
+        }
+
+        .code-label.hide {
+            opacity: 0;
+        }
+
+        .code {
+            font-size: 96px;
+            font-weight: bold;
+            color: #10b981;
+            letter-spacing: 20px;
+            font-family: 'Courier New', monospace;
+            transition: all 0.8s ease;
+        }
+
+        .code.pulse {
+            animation: codePulse 1s ease 3;
+        }
+
+        @keyframes codePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        .code.small {
+            font-size: 48px;
+            letter-spacing: 10px;
+        }
+
+        /* Start Tournament Button */
+        .start-tournament-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+        }
+
+        .start-tournament-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 30px 80px;
+            font-size: 48px;
+            font-weight: bold;
+            border-radius: 60px;
+            box-shadow: 0 10px 40px rgba(16, 185, 129, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: buttonAppear 0.8s ease 0.5s both;
+            position: relative;
+        }
+
+        .start-tournament-btn.clicked {
+            animation: buttonClick 0.3s ease;
+        }
+
+        @keyframes buttonAppear {
+            from {
+                transform: scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        @keyframes buttonClick {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(0.95);
+            }
+        }
+
+        .tournament-cursor {
+            position: absolute;
+            font-size: 60px;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        /* WhatsApp sharing with curved lines */
+        .whatsapp-scene {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .code-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 72px;
+            font-weight: bold;
+            color: #10b981;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 10px;
+        }
+
+        /* Team selection with scroll */
+        .teams-scroll-container {
+            width: 700px;
+            height: 600px;
+            overflow: hidden;
+            position: relative;
+            border-radius: 25px;
+            background: white;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            transition: background 0.8s ease, box-shadow 0.8s ease;
+        }
+
+        .teams-scroll-container.hide-box {
+            background: transparent !important;
+            box-shadow: none !important;
+            border: none !important;
+            overflow: visible !important;
+        }
+
+        .teams-list {
+            position: relative;
+            width: 100%;
+            padding: 20px;
+            height: auto;
+        }
+
+        .team-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+            padding: 25px 35px;
+            margin: 12px 0;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.5s ease;
+        }
+
+        .team-card.fade-out {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+
+        .team-card.selected {
+            border: 4px solid #10b981;
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            transform: scale(1.3);
+            box-shadow: 0 20px 80px rgba(16, 185, 129, 0.8);
+            animation: selectGlow 1s ease-in-out infinite;
+            position: relative;
+            z-index: 1000;
+        }
+
+        .team-card.move-up {
+            animation: moveToTop 2s ease-in-out forwards !important;
+        }
+
+        @keyframes moveToTop {
+            from {
+                transform: scale(1.3) translateY(0);
+            }
+            to {
+                transform: scale(1.5) translateY(-250px);
+            }
+        }
+
+        @keyframes selectGlow {
+            0%, 100% {
+                box-shadow: 0 20px 80px rgba(16, 185, 129, 0.8);
+            }
+            50% {
+                box-shadow: 0 25px 100px rgba(16, 185, 129, 1);
+            }
+        }
+
+        .team-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .team-name {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        .team-position {
+            font-size: 18px;
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .team-badge {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .mouse-cursor {
+            position: absolute;
+            font-size: 60px;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+            transition: all 0.5s ease;
+        }
+
+        /* Result display */
+        .result-container {
+            text-align: center;
+            animation: zoomIn 0.6s ease;
+            margin-top: 280px;
+        }
+
+        /* Napoli win result - raise content */
+        #scene5 .result-container {
+            margin-top: 250px;
+        }
+
+        #scene5 .points-display {
+            margin: 20px 0;
+        }
+
+        /* Fiorentina draw result - needs more space */
+        #scene7 .result-container {
+            margin-top: 250px;
+        }
+
+        #scene7 .points-display {
+            margin: 20px 0;
+        }
+
+        #scene7 .yellow-card-container {
+            margin-top: 30px;
+        }
+
+        #scene7 .card-label {
+            margin-top: 90px;
+            animation: none;
+            opacity: 0;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        #scene7 .card-label.blinking {
+            animation: blink 0.6s ease-in-out 3;
+        }
+
+        /* Lecce loss result - needs more space */
+        #scene9 .result-container {
+            margin-top: 250px;
+        }
+
+        #scene9 .points-display {
+            margin: 20px 0;
+        }
+
+        #scene9 .red-card-container {
+            margin-top: 30px;
+        }
+
+        #scene9 .card-label {
+            margin-top: 90px;
+            animation: none;
+            opacity: 0;
+        }
+
+        /* Verona underdog result - needs more space */
+        #scene11 .result-container {
+            margin-top: 250px;
+        }
+
+        #scene11 .result-badge {
+            font-size: 36px;
+            padding: 20px 40px;
+        }
+
+        #scene11 .points-display {
+            margin: 10px 0;
+        }
+
+        #scene11 .bonus-text {
+            margin: 10px 0;
+        }
+
+        #scene11 .yellow-card-container {
+            height: 200px !important;
+            margin-top: 60px;
+        }
+
+        @keyframes zoomIn {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .result-team {
+            font-size: 64px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 40px;
+            transition: opacity 0.8s ease;
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-badge {
+            display: inline-block;
+            padding: 25px 50px;
+            border-radius: 60px;
+            font-size: 40px;
+            font-weight: bold;
+            margin: 25px 0;
+        }
+
+        /* Removed default animation - now controlled by JavaScript for sequential appearance */
+
+        .result-win {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .result-draw {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: white;
+        }
+
+        .result-loss {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .points-display {
+            font-size: 96px;
+            font-weight: bold;
+            color: #10b981;
+            margin: 50px 0;
+        }
+
+        /* Removed default animation - now controlled by JavaScript for sequential appearance */
+
+        /* Yellow card growing animation */
+        .yellow-card-container {
+            margin: 50px 0;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .yellow-card {
+            width: 80px;
+            height: 110px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            border-radius: 10px;
+            box-shadow: 0 15px 40px rgba(251, 191, 36, 0.5);
+            margin: 0 15px;
+            opacity: 0;
+            position: relative;
+        }
+
+        .yellow-card.grow {
+            animation: cardGrow 1.5s ease forwards;
+        }
+
+        @keyframes cardGrow {
+            0% {
+                opacity: 1;
+                transform: scale(0.1);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(2.5);
+            }
+        }
+
+        .card-label {
+            font-size: 28px;
+            color: #f59e0b;
+            font-weight: bold;
+            margin-top: 180px;
+            opacity: 0;
+            animation: fadeIn 0.5s ease 1.5s forwards;
+        }
+
+        /* Red card label - ELIMINATO in red */
+        .red-card-container .card-label {
+            color: #ef4444;
+        }
+
+        /* Red card growing animation */
+        .red-card-container {
+            margin: 50px 0;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .red-card {
+            width: 80px;
+            height: 110px;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border-radius: 10px;
+            box-shadow: 0 15px 40px rgba(239, 68, 68, 0.5);
+            margin: 0 15px;
+            opacity: 0;
+            position: relative;
+        }
+
+        .red-card.grow {
+            animation: cardGrow 2.5s ease forwards;
+        }
+
+        /* Elimination */
+        .elimination-box {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            padding: 80px;
+            border-radius: 40px;
+            text-align: center;
+            box-shadow: 0 25px 70px rgba(239, 68, 68, 0.5);
+            animation: shake 0.6s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            25% { transform: translateX(-25px) rotate(-6deg); }
+            50% { transform: translateX(25px) rotate(6deg); }
+            75% { transform: translateX(-25px) rotate(-6deg); }
+        }
+
+        .elimination-text {
+            font-size: 72px;
+            font-weight: bold;
+            margin: 25px 0;
+        }
+
+        .elimination-icon {
+            font-size: 100px;
+        }
+
+        /* Standings */
+        .standings-container {
+            max-width: 850px;
+            width: 100%;
+            height: 650px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .standings-title {
+            font-size: 56px;
+            font-weight: bold;
+            color: #10b981;
+            text-align: center;
+            margin-bottom: 40px;
+            animation: slideInDown 0.6s ease;
+        }
+
+        .standings-list {
+            position: relative;
+            transition: transform 2s ease-out;
+        }
+
+        @keyframes slideInDown {
+            from {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .player-card {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 15px auto;
+            max-width: 750px;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .player-card.winner {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 4px solid #f59e0b;
+            transform: scale(1.02);
+            box-shadow: 0 20px 60px rgba(245, 158, 11, 0.5);
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .rank {
+            font-size: 36px;
+            font-weight: bold;
+        }
+
+        .player-name {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .player-stats {
+            font-size: 16px;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mini-yellow-card {
+            display: inline-block;
+            width: 18px;
+            height: 25px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            border-radius: 3px;
+            box-shadow: 0 2px 5px rgba(251, 191, 36, 0.5);
+        }
+
+        .player-points {
+            font-size: 28px;
+            font-weight: bold;
+            color: #10b981;
+        }
+
+        /* Trophy */
+        .trophy-container {
+            text-align: center;
+            animation: trophyRise 1.5s ease;
+        }
+
+        @keyframes trophyRise {
+            from {
+                transform: translateY(250px) scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .trophy {
+            font-size: 180px;
+            animation: rotateTrophy 3s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        @keyframes rotateTrophy {
+            0%, 100% { transform: rotate(-12deg); }
+            50% { transform: rotate(12deg); }
+        }
+
+        .winner-text {
+            font-size: 56px;
+            font-weight: bold;
+            color: #f59e0b;
+            margin-top: 35px;
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            animation: confettiFall 3s linear forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes drawLine {
+            to { stroke-dashoffset: 0; }
+        }
+
+        @keyframes phoneAppear {
+            to { opacity: 1; }
+        }
+
+        /* Underdog badge */
+        .team-card.has-underdog {
+            position: relative;
+        }
+
+        .underdog-badge-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #ef4444 0%, #f59e0b 100%);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 30px;
+            font-size: 22px;
+            font-weight: bold;
+            z-index: 10;
+            animation: wiggle 1s ease infinite;
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.6);
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: translate(-50%, -50%) rotate(-4deg); }
+            50% { transform: translate(-50%, -50%) rotate(4deg); }
+        }
+
+        .bonus-text {
+            font-size: 40px;
+            color: #10b981;
+            font-weight: bold;
+            margin: 40px 0 20px 0;
+            animation: slideInUp 0.8s ease;
+        }
+
+        @keyframes slideInUp {
+            from {
+                transform: translateY(60px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* X mark ABOVE card */
+        .x-mark {
+            position: absolute;
+            top: 15%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 300px;
+            color: #ef4444;
+            font-weight: bold;
+            opacity: 0;
+            line-height: 0.8;
+            z-index: 10;
+        }
+
+        .x-mark.show {
+            animation: xAppear 0.6s ease forwards;
+        }
+
+        @keyframes xAppear {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .card-fade {
+            animation: cardFadeOut 1s ease 0.6s forwards;
+        }
+
+        @keyframes cardFadeOut {
+            to {
+                opacity: 0.3;
+            }
+        }
+
+        /* Registration screen */
+        .register-container {
+            text-align: center;
+            animation: fadeIn 1s ease;
+        }
+
+        .register-text {
+            font-size: 48px;
+            font-weight: bold;
+            color: #059669;
+            margin-bottom: 30px;
+        }
+
+        .register-url {
+            font-size: 64px;
+            font-weight: bold;
+            color: #10b981;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Note text */
+        .note-text {
+            font-size: 48px;
+            color: #059669;
+            font-weight: bold;
+            margin-top: 15px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            position: absolute;
+            top: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            text-align: center;
+        }
+
+        .note-text.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Scene 1: Logo -->
+        <div class="scene active" id="scene1">
+            <div class="logo">
+                <span class="trophy-icon">🏆</span>
+                <span>FantaMatch</span>
+            </div>
+            <div class="subtitle" style="margin-top: 25px;">Il tuo torneo di pronostici</div>
+        </div>
+
+        <!-- Scene 2: Create Tournament -->
+        <div class="scene" id="scene2">
+            <div class="form-card">
+                <div class="form-cursor" id="formCursor">👆</div>
+                <div class="form-title">Crea il tuo Torneo</div>
+                <input type="text" class="input-field" id="tournamentName" value="" readonly placeholder="Nome torneo">
+                <select class="input-field">
+                    <option>Last Man Standing</option>
+                </select>
+                <input type="text" class="input-field" id="playerCount" value="" readonly placeholder="Numero giocatori">
+                <button class="create-btn" id="createBtn">Crea Torneo</button>
+            </div>
+        </div>
+
+        <!-- Scene 3: Tournament Code -->
+        <div class="scene" id="scene3">
+            <div class="code-box" id="codeBox">
+                <div class="code-label" id="codeLabel">Codice Torneo</div>
+                <div class="code" id="tournamentCode">A7X9K2</div>
+                <div class="subtitle" id="codeSubtitle" style="margin-top: 35px;">Condividilo con i tuoi amici</div>
+            </div>
+        </div>
+
+        <!-- Scene 3.5: WhatsApp Share Animation -->
+        <div class="scene" id="scene3_5">
+            <div class="whatsapp-scene" id="whatsappScene">
+                <div class="code-center" id="codeCenter">A7X9K2</div>
+            </div>
+        </div>
+
+        <!-- Scene 3.75: Start Tournament Button -->
+        <div class="scene" id="scene3_75">
+            <div class="start-tournament-container">
+                <div class="tournament-cursor" id="tournamentCursor">👆</div>
+                <div class="start-tournament-btn" id="startTournamentBtn">Inizia Torneo</div>
+            </div>
+        </div>
+
+        <!-- Scene 4: Pick Napoli -->
+        <div class="scene" id="scene4">
+            <div class="title" id="title4_intro">Prima di ogni giornata</div>
+            <div class="title" id="title4" style="opacity: 0;">Seleziona la tua squadra</div>
+            <div class="teams-scroll-container">
+                <div class="mouse-cursor" id="cursor1">👆</div>
+                <div class="teams-list" id="teamsList1"></div>
+            </div>
+        </div>
+
+        <!-- Scene 5: Win Result -->
+        <div class="scene" id="scene5">
+            <div class="result-container">
+                <div class="result-badge result-win" id="resultBadge5" style="opacity: 0;">✓ VITTORIA!</div>
+                <div class="points-display" id="resultPoints5" style="opacity: 0;">+10 punti</div>
+                <div class="subtitle" id="resultSubtitle5" style="font-size: 36px; color: #10b981; font-weight: bold; opacity: 0;">Scala la classifica! 📈</div>
+            </div>
+        </div>
+
+        <!-- Scene 6: Pick Fiorentina -->
+        <div class="scene" id="scene6">
+            <div class="title" id="title6">Giornata successiva</div>
+            <div class="note-text" id="note6">Sempre una squadra diversa</div>
+            <div class="teams-scroll-container">
+                <div class="mouse-cursor" id="cursor2">👆</div>
+                <div class="teams-list" id="teamsList2"></div>
+            </div>
+        </div>
+
+        <!-- Scene 7: Draw Result -->
+        <div class="scene" id="scene7">
+            <div class="result-container">
+                <div class="result-badge result-draw" id="resultBadge7" style="opacity: 0;">PAREGGIO</div>
+                <div class="points-display" id="resultPoints7" style="font-size: 72px; opacity: 0;">+6 punti</div>
+                <div class="yellow-card-container" id="yellowCardContainer7" style="margin-top: 100px; opacity: 0;">
+                    <div class="yellow-card" id="yellowCard"></div>
+                    <div class="card-label">+1 Cartellino Giallo ⚠️</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scene 10: Pick Verona (Underdog) -->
+        <div class="scene" id="scene10">
+            <div class="title" id="title10">Scegli un Underdog!</div>
+            <div class="note-text" id="note10">Rimuovi i cartellini gialli</div>
+            <div class="teams-scroll-container">
+                <div class="mouse-cursor" id="cursor4">👆</div>
+                <div class="teams-list" id="teamsList4"></div>
+            </div>
+        </div>
+
+        <!-- Scene 11: Underdog Win -->
+        <div class="scene" id="scene11">
+            <div class="result-container">
+                <div class="result-badge result-win" id="resultBadge11" style="opacity: 0;">✓ UNDERDOG VINCE!</div>
+                <div class="points-display" id="resultPoints11" style="font-size: 72px; opacity: 0;">+18 punti</div>
+                <div class="bonus-text" id="bonusText11" style="opacity: 0;">✨ Bonus: -1 Cartellino Giallo! ✨</div>
+                <div class="yellow-card-container" id="yellowCardContainer11" style="position: relative; height: 350px; opacity: 0;">
+                    <div class="yellow-card" id="cardToRemove" style="transform: scale(2); opacity: 1;"></div>
+                    <div class="x-mark" id="xMark">✗</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scene 8: Pick Lecce -->
+        <div class="scene" id="scene8">
+            <div class="title" id="title8">Altra giornata...</div>
+            <div class="note-text" id="note8" style="opacity: 0;">Attento a non sbagliare la scelta...</div>
+            <div class="note-text" id="note8b" style="opacity: 0;">potrebbe essere fatale</div>
+            <div class="teams-scroll-container">
+                <div class="mouse-cursor" id="cursor3">👆</div>
+                <div class="teams-list" id="teamsList3"></div>
+            </div>
+        </div>
+
+        <!-- Scene 9: Loss - Elimination -->
+        <div class="scene" id="scene9">
+            <div class="result-container">
+                <div class="result-badge result-loss" id="resultBadge9" style="opacity: 0;">✗ SCONFITTA</div>
+                <div class="points-display" id="resultPoints9" style="font-size: 72px; opacity: 0;">0 punti</div>
+                <div class="red-card-container" id="redCardContainer9" style="margin-top: 100px; opacity: 0;">
+                    <div class="red-card" id="redCard"></div>
+                    <div class="card-label">ELIMINATO ⚠️</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scene 12: Final Standings -->
+        <div class="scene" id="scene12">
+            <div class="standings-container">
+                <div class="standings-title">Classifica Finale</div>
+                <div class="standings-list" id="standingsList"></div>
+            </div>
+        </div>
+
+        <!-- Scene 13: Winner -->
+        <div class="scene" id="scene13">
+            <div class="trophy-container">
+                <div class="trophy">🏆</div>
+                <div class="winner-text">king90 Vince!</div>
+                <div class="subtitle" style="margin-top: 25px; font-size: 40px;">🎉 Campione FantaMatch 🎉</div>
+            </div>
+        </div>
+
+        <!-- Scene 14: Registration Call -->
+        <div class="scene" id="scene14">
+            <div class="register-container">
+                <div class="register-text">Registrati su</div>
+                <div class="register-url" id="registerUrl"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const teams = [
+            { name: 'Inter', position: 1, badge: 'I' },
+            { name: 'Roma', position: 2, badge: 'R' },
+            { name: 'Atalanta', position: 3, badge: 'A' },
+            { name: 'Lazio', position: 4, badge: 'L' },
+            { name: 'Milan', position: 5, badge: 'M' },
+            { name: 'Fiorentina', position: 6, badge: 'F' },
+            { name: 'Bologna', position: 7, badge: 'B' },
+            { name: 'Cremonese', position: 8, badge: 'CR' },
+            { name: 'Juventus', position: 9, badge: 'J' },
+            { name: 'Napoli', position: 10, badge: 'N' },
+            { name: 'Lecce', position: 11, badge: 'LC' },
+            { name: 'Torino', position: 12, badge: 'T' },
+            { name: 'Udinese', position: 13, badge: 'U' },
+            { name: 'Cagliari', position: 14, badge: 'C' },
+            { name: 'Genoa', position: 15, badge: 'G' },
+            { name: 'Parma', position: 16, badge: 'P' },
+            { name: 'Como', position: 17, badge: 'CO' },
+            { name: 'Verona', position: 18, badge: 'V' },
+            { name: 'Pisa', position: 19, badge: 'PI' },
+            { name: 'Sassuolo', position: 20, badge: 'S' }
+        ];
+
+        const players = [
+            { rank: '🥇', name: 'king90', cards: 0, points: 35, winner: true },
+            { rank: '🥈', name: 'the_best10', cards: 1, points: 42 },
+            { rank: '🥉', name: 'ninja_77', cards: 2, points: 52 },
+            { rank: '4', name: 'striker_pro', cards: 2, points: 48 },
+            { rank: '5', name: 'calcio_king', cards: 3, points: 61 },
+            { rank: '6', name: 'goal_master', cards: 3, points: 58 },
+            { rank: '7', name: 'fire_star', cards: 4, points: 105 },
+            { rank: '8', name: 'sonic_speed', cards: 4, points: 102 },
+            { rank: '9', name: 'shadow_king', cards: 4, points: 97 },
+            { rank: '10', name: 'thunder_11', cards: 4, points: 94 },
+            { rank: '11', name: 'eagle_eye', cards: 4, points: 89 },
+            { rank: '12', name: 'wolf_23', cards: 4, points: 86 },
+            { rank: '13', name: 'dragon_88', cards: 4, points: 81 },
+            { rank: '14', name: 'bomber_x', cards: 4, points: 78 },
+            { rank: '15', name: 'flash_99', cards: 4, points: 72 },
+            { rank: '16', name: 'azzurro45', cards: 4, points: 67 },
+            { rank: '❌', name: 'gamer_23', cards: 'ELIM', points: 26, eliminated: true }
+        ];
+
+        const scenes = [
+            { id: 'scene1', duration: 2500 },
+            { id: 'scene2', duration: 4500 },
+            { id: 'scene3', duration: 2000 },
+            { id: 'scene3_5', duration: 4000 },
+            { id: 'scene3_75', duration: 3000 },
+            { id: 'scene4', duration: 9000 },
+            { id: 'scene5', duration: 3500 },
+            { id: 'scene6', duration: 10000 },
+            { id: 'scene7', duration: 4500 },
+            { id: 'scene10', duration: 10000 },  // Verona underdog pick - moved up
+            { id: 'scene11', duration: 5000 },   // Verona underdog win - moved up
+            { id: 'scene8', duration: 10000 },   // Lecce pick - moved down
+            { id: 'scene9', duration: 5500 },    // Lecce loss - longer for slower red card animation
+            { id: 'scene12', duration: 5800 },   // Shorter duration - switch right after scroll ends
+            { id: 'scene13', duration: 4000 },
+            { id: 'scene14', duration: 4000 }
+        ];
+
+        let currentScene = 0;
+        let confettiInterval;
+
+        function createTeamCard(team, isUnderdog = false) {
+            return `
+                <div class="team-card ${isUnderdog ? 'has-underdog' : ''}" data-team="${team.name}">
+                    <div class="team-info">
+                        <div class="team-name">${team.name}</div>
+                        <div class="team-position">${team.position}° posto</div>
+                    </div>
+                    <div class="team-badge">${team.badge}</div>
+                    ${isUnderdog ? '<div class="underdog-badge-center">🔥 UNDERDOG</div>' : ''}
+                </div>
+            `;
+        }
+
+        function populateTeamsList(listId, targetTeam) {
+            const list = document.getElementById(listId);
+            const isUnderdog = targetTeam === 'Verona';
+
+            // Per Verona (underdog), ordina al contrario così appare più in basso con squadre visibili sopra
+            const sortedTeams = isUnderdog
+                ? [...teams].sort((a, b) => a.position - b.position)  // 1 -> 20
+                : [...teams].sort((a, b) => b.position - a.position); // 20 -> 1
+
+            list.innerHTML = sortedTeams.map(team =>
+                createTeamCard(team, isUnderdog && team.name === targetTeam)
+            ).join('');
+        }
+
+        function animateScroll(listId, targetTeam, cursorId, titleId) {
+            const list = document.getElementById(listId);
+            const cursor = document.getElementById(cursorId);
+            const container = list.closest('.teams-scroll-container');
+            const title = titleId ? document.getElementById(titleId) : null;
+
+            populateTeamsList(listId, targetTeam);
+
+            list.style.transition = 'none';
+            list.style.transform = 'translateY(100%)';
+
+            setTimeout(() => {
+                const targetCard = Array.from(list.querySelectorAll('.team-card'))
+                    .find(card => card.dataset.team === targetTeam);
+
+                if (!targetCard) return;
+
+                const cardTop = targetCard.offsetTop;
+                const containerHeight = container.clientHeight;
+                const cardHeight = targetCard.clientHeight;
+                const scrollTo = -(cardTop - containerHeight / 2 + cardHeight / 2);
+
+                list.style.transition = 'transform 3.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                list.style.transform = `translateY(${scrollTo}px)`;
+
+                // Start wheel spinning sound when teams become visible
+                setTimeout(() => {
+                    playWheelSpinSound();
+                }, 800);
+
+                setTimeout(() => {
+                    const rect = targetCard.getBoundingClientRect();
+                    const containerRect = container.getBoundingClientRect();
+
+                    cursor.style.left = '20px';
+                    cursor.style.top = (rect.top - containerRect.top + rect.height / 2 - 30) + 'px';
+                    cursor.style.opacity = '1';
+
+                    setTimeout(() => {
+                        cursor.style.left = (rect.left - containerRect.left + rect.width / 2 - 30) + 'px';
+
+                        setTimeout(() => {
+                            cursor.style.transform = 'scale(0.8)';
+                            playClickSound(); // Play click sound when selecting team
+
+                            // First fade out other cards
+                            const allCards = list.querySelectorAll('.team-card');
+                            allCards.forEach(card => {
+                                if (card !== targetCard) {
+                                    card.classList.add('fade-out');
+                                }
+                            });
+
+                            // Fade out title if provided
+                            if (title) {
+                                title.classList.add('fade-out');
+                            }
+
+                            // Then grow and center the selected card
+                            setTimeout(() => {
+                                // Keep card in relative position but scale it
+                                targetCard.style.position = 'relative';
+                                targetCard.style.zIndex = '2000';
+                                targetCard.classList.add('selected');
+
+                                // Hide the white container
+                                container.classList.add('hide-box');
+
+                                // Fade out cursor
+                                cursor.style.opacity = '0';
+
+                                // After a pause, move card up
+                                setTimeout(() => {
+                                    targetCard.classList.add('move-up');
+                                }, 800);
+                            }, 500);
+                        }, 500);
+                    }, 100);
+                }, 3700);
+            }, 500);
+        }
+
+        function createWhatsAppAnimation() {
+            const scene = document.getElementById('whatsappScene');
+            const codeElement = document.getElementById('codeCenter');
+
+            // Message icon positions - fixed but appear scattered (not circular, not ordered)
+            const messagePositions = [
+                { angle: 45, distance: 480 },
+                { angle: 280, distance: 320 },
+                { angle: 120, distance: 410 },
+                { angle: 15, distance: 350 },
+                { angle: 200, distance: 460 },
+                { angle: 330, distance: 380 },
+                { angle: 90, distance: 440 },
+                { angle: 245, distance: 340 },
+                { angle: 160, distance: 490 },
+                { angle: 310, distance: 420 },
+                { angle: 65, distance: 360 },
+                { angle: 210, distance: 400 },
+                { angle: 145, distance: 330 },
+                { angle: 270, distance: 470 },
+                { angle: 180, distance: 390 }
+            ];
+
+            messagePositions.forEach((pos, index) => {
+                // First 5 at constant speed (250ms interval), remaining 10 accelerating
+                const delays = [0, 250, 500, 750, 1000, 1200, 1370, 1510, 1630, 1730, 1810, 1880, 1940, 1985, 2020];
+                const delay = delays[index];
+
+                setTimeout(() => {
+                    // Calculate center accounting for letter-spacing
+                    // The text "A7X9K2" has 6 characters with 10px letter-spacing
+                    // Need to shift left more to account for visual center
+                    const letterSpacingOffset = 350; // Shifted EXTREMELY far left
+                    const verticalOffset = 30; // Shift up
+                    const centerX = window.innerWidth / 2 - letterSpacingOffset;
+                    const centerY = window.innerHeight / 2 - verticalOffset;
+                    const rad = pos.angle * Math.PI / 180;
+                    const x = centerX + Math.cos(rad) * pos.distance;
+                    const y = centerY + Math.sin(rad) * pos.distance;
+
+                    // Create message icon
+                    const messageIcon = document.createElement('div');
+                    messageIcon.style.position = 'absolute';
+                    messageIcon.style.left = x + 'px';
+                    messageIcon.style.top = y + 'px';
+                    messageIcon.style.fontSize = '50px';
+                    messageIcon.style.opacity = '0';
+                    messageIcon.style.animation = 'phoneAppear 0.5s ease forwards';
+                    messageIcon.textContent = '💬';
+                    scene.appendChild(messageIcon);
+
+                    // Play WhatsApp sound when message appears (immediately)
+                    playWhatsAppSound();
+
+                    // Draw curved line - reduced delay for faster sync
+                    setTimeout(() => {
+                        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                        svg.style.position = 'absolute';
+                        svg.style.top = '0';
+                        svg.style.left = '0';
+                        svg.style.width = '100%';
+                        svg.style.height = '100%';
+                        svg.style.pointerEvents = 'none';
+                        svg.style.zIndex = '1';
+                        
+                        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                        const controlX = (centerX + x) / 2 + (Math.random() - 0.5) * 200;
+                        const controlY = (centerY + y) / 2 - 100;
+                        const d = `M ${centerX} ${centerY} Q ${controlX} ${controlY} ${x} ${y}`;
+                        
+                        path.setAttribute('d', d);
+                        path.setAttribute('stroke', 'white');
+                        path.setAttribute('stroke-width', '4');
+                        path.setAttribute('fill', 'none');
+                        path.style.strokeDasharray = '1000';
+                        path.style.strokeDashoffset = '1000';
+                        path.style.animation = 'drawLine 1s ease-out forwards';
+                        
+                        svg.appendChild(path);
+                        scene.appendChild(svg);
+
+                        // Animate code traveling along the path - reduced delay for faster sync
+                        setTimeout(() => {
+                            const travelingCode = document.createElement('div');
+                            travelingCode.textContent = 'A7X9K2';
+                            travelingCode.style.position = 'absolute';
+                            travelingCode.style.fontSize = '24px';
+                            travelingCode.style.fontWeight = 'bold';
+                            travelingCode.style.color = '#10b981';
+                            travelingCode.style.fontFamily = 'Courier New, monospace';
+                            travelingCode.style.zIndex = '10';
+                            travelingCode.style.left = centerX + 'px';
+                            travelingCode.style.top = centerY + 'px';
+                            scene.appendChild(travelingCode);
+                            
+                            // Animate along path
+                            const duration = 1200;
+                            const steps = 60;
+                            let step = 0;
+                            
+                            const interval = setInterval(() => {
+                                const t = step / steps;
+                                const px = Math.pow(1 - t, 2) * centerX + 2 * (1 - t) * t * controlX + Math.pow(t, 2) * x;
+                                const py = Math.pow(1 - t, 2) * centerY + 2 * (1 - t) * t * controlY + Math.pow(t, 2) * y;
+                                
+                                travelingCode.style.left = px + 'px';
+                                travelingCode.style.top = py + 'px';
+                                travelingCode.style.transform = 'translate(-50%, -50%)';
+                                
+                                step++;
+                                if (step > steps) {
+                                    clearInterval(interval);
+                                    travelingCode.style.opacity = '0';
+                                    setTimeout(() => travelingCode.remove(), 300);
+                                }
+                            }, duration / steps);
+                        }, 200);
+                    }, 100);
+                }, delay);
+            });
+        }
+
+        function populateStandings() {
+            const list = document.getElementById('standingsList');
+            list.innerHTML = players.map(player => {
+                // Generate multiple yellow cards instead of number + card
+                let cardsHTML = '';
+                if (!player.eliminated) {
+                    for (let i = 0; i < player.cards; i++) {
+                        cardsHTML += '<span class="mini-yellow-card"></span>';
+                    }
+                }
+
+                const hasMaxCards = player.cards === 4 && !player.eliminated;
+                return `
+                    <div class="player-card ${player.winner ? 'winner' : ''}" ${player.eliminated || hasMaxCards ? 'style="opacity: 0.5;"' : ''}>
+                        <div class="player-info">
+                            <div class="rank">${player.rank}</div>
+                            <div>
+                                <div class="player-name">${player.name}</div>
+                                <div class="player-stats" ${player.eliminated || hasMaxCards ? 'style="color: #ef4444;"' : ''}>
+                                    ${player.eliminated || hasMaxCards ? 'ELIMINATO' : cardsHTML}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="player-points" ${player.eliminated || hasMaxCards ? 'style="color: #999;"' : ''}>${player.points} pts</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function scrollStandings() {
+            const list = document.getElementById('standingsList');
+            const container = document.querySelector('.standings-container');
+            
+            // Start from bottom (scrolled down)
+            const listHeight = list.scrollHeight;
+            const containerHeight = container.clientHeight - 120; // Subtract title height
+            const scrollAmount = listHeight - containerHeight;
+            
+            // Initially position at bottom
+            list.style.transition = 'none';
+            list.style.transform = `translateY(-${scrollAmount}px)`;
+            
+            // Then scroll up to top (winner)
+            setTimeout(() => {
+                list.style.transition = 'transform 5s ease-out';
+                list.style.transform = 'translateY(0px)';
+            }, 500);
+        }
+
+        function showScene(index) {
+            const allScenes = document.querySelectorAll('.scene');
+            allScenes.forEach((scene, i) => {
+                if (i === index) {
+                    scene.classList.add('active');
+                } else {
+                    scene.classList.remove('active');
+                }
+            });
+
+            // Stop any wheel spinning sound when changing scenes
+            stopWheelSpinSound();
+
+            // Stop music and cheers when changing scenes
+            stopEpicMusic();
+            stopStadiumCheers();
+
+            // Transfer team card from selection scene to result scene
+            // Transitions: 4→5 (Napoli), 6→7 (Fiorentina), 10→11 (Verona), 8→9 (Lecce)
+            if (index === 6 || index === 8 || index === 10 || index === 12) {
+                // Capture position immediately, before any transitions
+                const previousScene = allScenes[index - 1];
+                const movedCard = previousScene.querySelector('.team-card.move-up');
+
+                if (movedCard) {
+                    // Get the position NOW before the scene changes
+                    const rect = movedCard.getBoundingClientRect();
+                    const computedStyle = window.getComputedStyle(movedCard);
+
+                    // Remove any existing persistent card
+                    const existingCard = document.querySelector('.persistent-team-card');
+                    if (existingCard) {
+                        existingCard.remove();
+                    }
+
+                    // Clone the card and make it fixed position
+                    const cardClone = movedCard.cloneNode(true);
+
+                    // Keep 'selected' class for the green style, but remove animations
+                    cardClone.classList.remove('move-up', 'fade-in', 'fade-out');
+                    cardClone.classList.add('persistent-team-card');
+                    cardClone.style.animation = 'none';
+                    cardClone.style.transition = 'none';
+
+                    // The rect dimensions are already scaled by 1.5
+                    // We need to divide by 1.5 to get the original dimensions
+                    // Then apply scale(1.5) to maintain text size
+                    const scale = 1.5;
+                    const unscaledWidth = rect.width / scale;
+                    const unscaledHeight = rect.height / scale;
+
+                    cardClone.style.position = 'fixed';
+                    cardClone.style.left = rect.left + 'px';
+                    cardClone.style.top = rect.top + 'px';
+                    cardClone.style.width = unscaledWidth + 'px';
+                    cardClone.style.height = unscaledHeight + 'px';
+                    cardClone.style.transform = 'scale(1.5)';
+                    cardClone.style.transformOrigin = 'top left';
+                    cardClone.style.zIndex = '3000';
+                    cardClone.style.opacity = '1';
+                    cardClone.style.visibility = 'visible';
+
+                    // Add to body so it persists across scene changes
+                    document.body.appendChild(cardClone);
+                } else {
+                    console.log('Card not found for scene index:', index);
+                }
+            }
+
+            // Remove persistent card when starting a new selection scene or standings
+            // Scenes: 5 (Napoli), 7 (Fiorentina), 9 (Lecce), 11 (Verona), 13 (Standings)
+            if (index === 5 || index === 7 || index === 9 || index === 11 || index === 13) {
+                const existingCard = document.querySelector('.persistent-team-card');
+                if (existingCard) {
+                    existingCard.remove();
+                }
+            }
+
+            if (confettiInterval) {
+                clearInterval(confettiInterval);
+            }
+
+            // Scene 1: Logo - play stamp sound when rotation completes
+            if (index === 0) {
+                setTimeout(() => {
+                    playStampSound();
+                }, 800); // Sync with logo stopping
+            }
+
+            // Scene 2: Form with typewriters and cursor
+            if (index === 1) {
+                setTimeout(() => {
+                    typeWriter('Serie A Champions', 'tournamentName', 100);
+                    setTimeout(() => {
+                        typeWriter('+50', 'playerCount', 150);
+                        setTimeout(() => {
+                            const btn = document.getElementById('createBtn');
+                            const cursor = document.getElementById('formCursor');
+                            const rect = btn.getBoundingClientRect();
+                            const formCard = document.querySelector('.form-card');
+                            const formRect = formCard.getBoundingClientRect();
+                            
+                            cursor.style.left = (rect.left - formRect.left + rect.width / 2 - 25) + 'px';
+                            cursor.style.top = (rect.top - formRect.top + rect.height / 2 - 25) + 'px';
+                            cursor.style.opacity = '1';
+                            
+                            setTimeout(() => {
+                                cursor.style.transform = 'scale(0.8)';
+                                btn.classList.add('clicked');
+                                playClickSound(); // Play click sound when button is clicked
+                                setTimeout(() => {
+                                    cursor.style.transform = 'scale(1)';
+                                }, 150);
+                            }, 500);
+                        }, 800);
+                    }, 1800);
+                }, 500);
+            }
+
+            // Scene 3: Code pulse then shrink
+            if (index === 2) {
+                setTimeout(() => {
+                    document.getElementById('tournamentCode').classList.add('pulse');
+                    playCodeBlinkSound(); // Play muffled sound with code blinking
+
+                    setTimeout(() => {
+                        document.getElementById('codeLabel').classList.add('hide');
+                        document.getElementById('codeSubtitle').style.opacity = '0';
+                    }, 2500);
+                }, 500);
+            }
+
+            // Scene 3.5: WhatsApp animation
+            if (index === 3) {
+                setTimeout(() => createWhatsAppAnimation(), 500);
+            }
+
+            // Scene 3.75: Start Tournament Button
+            if (index === 4) {
+                setTimeout(() => {
+                    const btn = document.getElementById('startTournamentBtn');
+                    const cursor = document.getElementById('tournamentCursor');
+                    const rect = btn.getBoundingClientRect();
+
+                    // Center cursor on button
+                    cursor.style.left = (rect.left + rect.width / 2 - 300) + 'px';
+                    cursor.style.top = (rect.top + rect.height / 2 - 30) + 'px';
+                    cursor.style.opacity = '1';
+
+                    setTimeout(() => {
+                        cursor.style.transform = 'scale(0.8)';
+                        btn.classList.add('clicked');
+                        playClickSound(); // Play click sound when button is clicked
+                        setTimeout(() => {
+                            cursor.style.transform = 'scale(1)';
+                        }, 150);
+                    }, 1000);
+                }, 500);
+            }
+
+            // Scene 5: Win with climb message - sequential animations (card from previous scene remains visible)
+            if (index === 6) {
+                const badge = document.getElementById('resultBadge5');
+                badge.style.opacity = '1';
+                badge.style.transition = 'opacity 0.8s ease';
+                setTimeout(() => {
+                    const points = document.getElementById('resultPoints5');
+                    points.style.opacity = '1';
+                    points.style.transition = 'opacity 0.8s ease';
+                    setTimeout(() => {
+                        const subtitle = document.getElementById('resultSubtitle5');
+                        subtitle.style.opacity = '1';
+                        subtitle.style.transition = 'opacity 0.8s ease';
+                    }, 800);
+                }, 800);
+            }
+
+            // Scene 7: Draw result - sequential animations (card from previous scene remains visible)
+            if (index === 8) {
+                const badge = document.getElementById('resultBadge7');
+                badge.style.opacity = '1';
+                badge.style.transition = 'opacity 0.8s ease';
+                playAlarmSound(); // Play alarm when PAREGGIO appears
+                setTimeout(() => {
+                    const points = document.getElementById('resultPoints7');
+                    points.style.opacity = '1';
+                    points.style.transition = 'opacity 0.8s ease';
+                    setTimeout(() => {
+                        const container = document.getElementById('yellowCardContainer7');
+                        container.style.opacity = '1';
+                        container.style.transition = 'opacity 0.8s ease';
+                        // After container is visible, grow the yellow card
+                        setTimeout(() => {
+                            document.getElementById('yellowCard').classList.add('grow');
+                            // Show label immediately with the card
+                            const label = document.querySelector('#yellowCardContainer7 .card-label');
+                            label.style.opacity = '1';
+                            label.style.transition = 'opacity 0.5s ease';
+                            // Start blinking immediately
+                            setTimeout(() => {
+                                label.classList.add('blinking');
+                            }, 100);
+                        }, 500);
+                    }, 800);
+                }, 800);
+            }
+
+            // Scene 11: Underdog win - sequential animations (card from previous scene remains visible)
+            if (index === 10) {
+                const badge = document.getElementById('resultBadge11');
+                badge.style.opacity = '1';
+                badge.style.transition = 'opacity 0.8s ease';
+                playUnderdogSound(); // Play dramatic underdog victory sound
+                setTimeout(() => {
+                    const points = document.getElementById('resultPoints11');
+                    points.style.opacity = '1';
+                    points.style.transition = 'opacity 0.8s ease';
+                    setTimeout(() => {
+                        const bonus = document.getElementById('bonusText11');
+                        bonus.style.opacity = '1';
+                        bonus.style.transition = 'opacity 0.8s ease';
+                        setTimeout(() => {
+                            const container = document.getElementById('yellowCardContainer11');
+                            container.style.opacity = '1';
+                            container.style.transition = 'opacity 0.8s ease';
+                            // After container is visible, show X mark and fade card
+                            setTimeout(() => {
+                                const xMark = document.getElementById('xMark');
+                                xMark.classList.add('show');
+                                setTimeout(() => {
+                                    const cardToRemove = document.getElementById('cardToRemove');
+                                    cardToRemove.classList.add('card-fade');
+                                }, 600);
+                            }, 500);
+                        }, 800);
+                    }, 800);
+                }, 800);
+            }
+
+            // Scene 9: Loss result - sequential animations (card from previous scene remains visible)
+            if (index === 12) {
+                const badge = document.getElementById('resultBadge9');
+                badge.style.opacity = '1';
+                badge.style.transition = 'opacity 0.8s ease';
+                playWrongAnswerSound(); // Play wrong answer sound when SCONFITTA appears
+                setTimeout(() => {
+                    const points = document.getElementById('resultPoints9');
+                    points.style.opacity = '1';
+                    points.style.transition = 'opacity 0.8s ease';
+                    setTimeout(() => {
+                        const container = document.getElementById('redCardContainer9');
+                        container.style.opacity = '1';
+                        container.style.transition = 'opacity 0.8s ease';
+                        // After container is visible, grow the red card
+                        setTimeout(() => {
+                            document.getElementById('redCard').classList.add('grow');
+                            // Show label after card has grown (2.5s animation)
+                            setTimeout(() => {
+                                const label = document.querySelector('#redCardContainer9 .card-label');
+                                label.style.opacity = '1';
+                                label.style.transition = 'opacity 0.5s ease';
+                            }, 2500);
+                        }, 500);
+                    }, 800);
+                }, 800);
+            }
+
+            // Scene 6, 8, 10: Alternate title and note
+            if (index === 7) {
+                setTimeout(() => {
+                    document.getElementById('title6').classList.add('fade-out');
+                    document.getElementById('note6').classList.add('show');
+                }, 2000);
+            }
+            if (index === 9) {
+                setTimeout(() => {
+                    document.getElementById('title10').classList.add('fade-out');
+                    document.getElementById('note10').classList.add('show');
+                }, 2000);
+            }
+            if (index === 11) {
+                // Scene 8 (Lecce): Show first warning, then second warning, then scroll
+                setTimeout(() => {
+                    document.getElementById('title8').classList.add('fade-out');
+                    const note8 = document.getElementById('note8');
+                    note8.style.opacity = '1';
+                    note8.style.transition = 'opacity 0.5s ease';
+                }, 1500);
+                setTimeout(() => {
+                    const note8 = document.getElementById('note8');
+                    note8.style.opacity = '0';
+                    note8.style.transition = 'opacity 0.5s ease';
+                }, 3500);
+                setTimeout(() => {
+                    const note8b = document.getElementById('note8b');
+                    note8b.style.opacity = '1';
+                    note8b.style.transition = 'opacity 0.5s ease';
+                }, 4000);
+            }
+
+            // Scene 12: Standings with scroll
+            if (index === 13) {
+                populateStandings();
+                scrollStandings();
+                playEpicMusic();
+            }
+
+            // Scene 13: Confetti and stadium cheers
+            if (index === 14) {
+                createConfetti();
+                playStadiumCheers();
+            }
+
+            // Scene 14: Registration typewriter
+            if (index === 15) {
+                setTimeout(() => {
+                    typeWriter('fantamatch.com', 'registerUrl', 80, () => {
+                        // Play stamp sound when typing is complete
+                        setTimeout(() => {
+                            playStampSound();
+                        }, 200);
+                    });
+                }, 500);
+            }
+
+            // Team selections
+            if (index === 5) {
+                // Start scrolling with minimal delay
+                setTimeout(() => {
+                    animateScroll('teamsList1', 'Napoli', 'cursor1', 'title4');
+                }, 500);
+
+                // Overlap the text transitions - second appears as first fades
+                setTimeout(() => {
+                    document.getElementById('title4_intro').classList.add('fade-out');
+                    // Start second text immediately when first starts fading
+                    document.getElementById('title4').style.opacity = '1';
+                    document.getElementById('title4').style.transition = 'opacity 0.5s ease';
+                }, 1200);
+            }
+            if (index === 7) {
+                setTimeout(() => {
+                    animateScroll('teamsList2', 'Fiorentina', 'cursor2', 'title6');
+                }, 500);
+            }
+            if (index === 9) {
+                setTimeout(() => {
+                    animateScroll('teamsList4', 'Verona', 'cursor4', 'title10');
+                }, 500);
+            }
+            if (index === 11) {
+                setTimeout(() => {
+                    animateScroll('teamsList3', 'Lecce', 'cursor3', 'title8');
+                }, 500);
+            }
+        }
+
+        // Audio files for sound effects
+        const typingSound = new Audio('./Sounds/typing-sound-effect-336781 (mp3cut).mp3');
+        const stampSound = new Audio('./Sounds/470710__ifekry__traditional-stamp.wav');
+        const notificationSound = new Audio('./Sounds/notification-5-371504.mp3');
+
+        // Create global AudioContext
+        let audioContext = null;
+        let currentTypingSound = null;
+
+        function initAudioContext() {
+            if (!audioContext) {
+                try {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                } catch (e) {
+                    console.error('Web Audio API not supported', e);
+                }
+            }
+            // Resume if suspended (required by some browsers)
+            if (audioContext && audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            return audioContext;
+        }
+
+        // Sound effects functions
+        function playKeyboardSound() {
+            try {
+                const sound = typingSound.cloneNode();
+                sound.volume = 1.0;
+                sound.play().catch(e => console.error('Error playing keyboard sound', e));
+            } catch (e) {
+                console.error('Error playing keyboard sound', e);
+            }
+        }
+
+        function playStampSound() {
+            try {
+                const sound = stampSound.cloneNode();
+                sound.volume = 1.0;
+                sound.play().catch(e => console.error('Error playing stamp sound', e));
+            } catch (e) {
+                console.error('Error playing stamp sound', e);
+            }
+        }
+
+        function playNotificationSound() {
+            try {
+                const sound = notificationSound.cloneNode();
+                sound.volume = 0.4;
+                sound.play().catch(e => console.error('Error playing notification sound', e));
+            } catch (e) {
+                console.error('Error playing notification sound', e);
+            }
+        }
+
+        function playClickSound() {
+            const ctx = initAudioContext();
+            if (!ctx) return;
+
+            try {
+                // Classic mouse click sound - two frequencies for realistic click
+                const osc1 = ctx.createOscillator();
+                const osc2 = ctx.createOscillator();
+                const gainNode = ctx.createGain();
+
+                osc1.connect(gainNode);
+                osc2.connect(gainNode);
+                gainNode.connect(ctx.destination);
+
+                // Two frequencies for realistic click sound
+                osc1.frequency.value = 1000;
+                osc2.frequency.value = 80;
+                osc1.type = 'square';
+                osc2.type = 'triangle';
+
+                // Very short, sharp click
+                gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.02);
+
+                osc1.start(ctx.currentTime);
+                osc2.start(ctx.currentTime);
+                osc1.stop(ctx.currentTime + 0.02);
+                osc2.stop(ctx.currentTime + 0.02);
+            } catch (e) {
+                console.error('Error playing click sound', e);
+            }
+        }
+
+        function playWhatsAppSound() {
+            try {
+                const sound = notificationSound.cloneNode();
+                sound.volume = 0.4;
+                sound.play().catch(e => console.error('Error playing WhatsApp sound', e));
+            } catch (e) {
+                console.error('Error playing WhatsApp sound', e);
+            }
+        }
+
+        // Epic music for standings
+        let currentEpicMusic = null;
+        function playEpicMusic() {
+            stopEpicMusic(); // Stop any existing music
+
+            try {
+                currentEpicMusic = new Audio('./Sounds/orchestral-win-331233.mp3');
+                currentEpicMusic.volume = 0.6;
+                currentEpicMusic.play().catch(e => console.error('Error playing epic music', e));
+            } catch (e) {
+                console.error('Error playing epic music', e);
+            }
+        }
+
+        function stopEpicMusic() {
+            if (currentEpicMusic) {
+                try {
+                    currentEpicMusic.pause();
+                    currentEpicMusic.currentTime = 0;
+                } catch (e) {
+                    // Already stopped
+                }
+                currentEpicMusic = null;
+            }
+        }
+
+        // Warning alarm sound for yellow card - fast and intense
+        function playAlarmSound() {
+            const ctx = initAudioContext();
+            if (!ctx) return;
+
+            try {
+                // Fast loud alarm (9 quick bursts ~3.15s)
+                const alarmTimes = [0, 0.35, 0.7, 1.05, 1.4, 1.75, 2.1, 2.45, 2.8]; // 9 alarms with 0.35s interval
+
+                alarmTimes.forEach((time, index) => {
+                    // Calculate fade factor for last alarms (start fading from alarm 6)
+                    const fadeFactor = index >= 5 ? 1 - ((index - 5) / 4) * 0.7 : 1;
+
+                    // Reduced volume siren-like alarm
+                    const osc1 = ctx.createOscillator();
+                    const gain1 = ctx.createGain();
+
+                    osc1.connect(gain1);
+                    gain1.connect(ctx.destination);
+
+                    osc1.type = 'square';
+                    // Faster frequency sweep for siren effect
+                    osc1.frequency.setValueAtTime(800, ctx.currentTime + time);
+                    osc1.frequency.linearRampToValueAtTime(1400, ctx.currentTime + time + 0.1);
+                    osc1.frequency.linearRampToValueAtTime(800, ctx.currentTime + time + 0.2);
+
+                    gain1.gain.setValueAtTime(0.25 * fadeFactor, ctx.currentTime + time);
+                    gain1.gain.setValueAtTime(0.25 * fadeFactor, ctx.currentTime + time + 0.15);
+                    gain1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + time + 0.2);
+
+                    osc1.start(ctx.currentTime + time);
+                    osc1.stop(ctx.currentTime + time + 0.25);
+
+                    // Second layer for more power
+                    const osc2 = ctx.createOscillator();
+                    const gain2 = ctx.createGain();
+
+                    osc2.connect(gain2);
+                    gain2.connect(ctx.destination);
+
+                    osc2.type = 'sawtooth';
+                    osc2.frequency.setValueAtTime(400, ctx.currentTime + time);
+                    osc2.frequency.linearRampToValueAtTime(700, ctx.currentTime + time + 0.1);
+                    osc2.frequency.linearRampToValueAtTime(400, ctx.currentTime + time + 0.2);
+
+                    gain2.gain.setValueAtTime(0.22 * fadeFactor, ctx.currentTime + time);
+                    gain2.gain.setValueAtTime(0.22 * fadeFactor, ctx.currentTime + time + 0.15);
+                    gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + time + 0.2);
+
+                    osc2.start(ctx.currentTime + time);
+                    osc2.stop(ctx.currentTime + time + 0.25);
+
+                    // Third layer - high frequency buzz for intensity
+                    const osc3 = ctx.createOscillator();
+                    const gain3 = ctx.createGain();
+
+                    osc3.connect(gain3);
+                    gain3.connect(ctx.destination);
+
+                    osc3.type = 'square';
+                    osc3.frequency.value = 1600;
+
+                    gain3.gain.setValueAtTime(0.15 * fadeFactor, ctx.currentTime + time);
+                    gain3.gain.setValueAtTime(0.15 * fadeFactor, ctx.currentTime + time + 0.15);
+                    gain3.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + time + 0.2);
+
+                    osc3.start(ctx.currentTime + time);
+                    osc3.stop(ctx.currentTime + time + 0.25);
+                });
+            } catch (e) {
+                console.error('Error playing alarm sound', e);
+            }
+        }
+
+        // Wrong answer sound for red card - dramatic quiz show "pua pua puuuaaaaa"
+        function playWrongAnswerSound() {
+            const ctx = initAudioContext();
+            if (!ctx) return;
+
+            try {
+                // Dramatic wrong answer sound: longer-longer-very low and long descending (lasts entire scene)
+                const notes = [
+                    { freq: 349.23, time: 0, duration: 0.4 },       // F (pua - longer)
+                    { freq: 293.66, time: 0.45, duration: 0.4 },    // D (pua - longer)
+                    { freq: 174.61, time: 0.9, duration: 3.2 }      // F low (puuuaaaaa - very long to end of scene)
+                ];
+
+                notes.forEach((note, index) => {
+                    const osc = ctx.createOscillator();
+                    const gainNode = ctx.createGain();
+
+                    osc.connect(gainNode);
+                    gainNode.connect(ctx.destination);
+
+                    osc.type = 'triangle'; // Softer, more musical tone
+
+                    if (index === 2) {
+                        // Third note slides way down for very dramatic effect
+                        osc.frequency.setValueAtTime(note.freq, ctx.currentTime + note.time);
+                        osc.frequency.exponentialRampToValueAtTime(note.freq * 0.5, ctx.currentTime + note.time + note.duration);
+                    } else {
+                        osc.frequency.value = note.freq;
+                    }
+
+                    // More volume on third note for drama
+                    const volume = index === 2 ? 0.4 : 0.35;
+                    gainNode.gain.setValueAtTime(volume, ctx.currentTime + note.time);
+                    gainNode.gain.setValueAtTime(volume, ctx.currentTime + note.time + note.duration - 0.15);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + note.time + note.duration);
+
+                    osc.start(ctx.currentTime + note.time);
+                    osc.stop(ctx.currentTime + note.time + note.duration);
+
+                    // Add harmonic layer for richness and depth
+                    const osc2 = ctx.createOscillator();
+                    const gain2 = ctx.createGain();
+
+                    osc2.connect(gain2);
+                    gain2.connect(ctx.destination);
+
+                    osc2.type = 'sine';
+
+                    if (index === 2) {
+                        osc2.frequency.setValueAtTime(note.freq / 2, ctx.currentTime + note.time);
+                        osc2.frequency.exponentialRampToValueAtTime(note.freq * 0.5 / 2, ctx.currentTime + note.time + note.duration);
+                    } else {
+                        osc2.frequency.value = note.freq / 2;
+                    }
+
+                    const volume2 = index === 2 ? 0.3 : 0.2;
+                    gain2.gain.setValueAtTime(volume2, ctx.currentTime + note.time);
+                    gain2.gain.setValueAtTime(volume2, ctx.currentTime + note.time + note.duration - 0.15);
+                    gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + note.time + note.duration);
+
+                    osc2.start(ctx.currentTime + note.time);
+                    osc2.stop(ctx.currentTime + note.time + note.duration);
+                });
+            } catch (e) {
+                console.error('Error playing wrong answer sound', e);
+            }
+        }
+
+        // Muffled glow sound for code blinking
+        function playCodeBlinkSound() {
+            const ctx = initAudioContext();
+            if (!ctx) return;
+
+            try {
+                // Soft muffled pulse sound (3 blinks)
+                const blinkTimes = [0, 0.6, 1.2]; // 3 blinks at 0.6s interval
+
+                blinkTimes.forEach(time => {
+                    // Low frequency muffled tone
+                    const osc1 = ctx.createOscillator();
+                    const gain1 = ctx.createGain();
+                    const filter1 = ctx.createBiquadFilter();
+
+                    osc1.connect(filter1);
+                    filter1.connect(gain1);
+                    gain1.connect(ctx.destination);
+
+                    osc1.type = 'sine';
+                    osc1.frequency.value = 200;
+
+                    // Low-pass filter for muffled effect
+                    filter1.type = 'lowpass';
+                    filter1.frequency.value = 400;
+                    filter1.Q.value = 0.5;
+
+                    // Gentle swell
+                    gain1.gain.setValueAtTime(0, ctx.currentTime + time);
+                    gain1.gain.linearRampToValueAtTime(0.08, ctx.currentTime + time + 0.15);
+                    gain1.gain.linearRampToValueAtTime(0, ctx.currentTime + time + 0.4);
+
+                    osc1.start(ctx.currentTime + time);
+                    osc1.stop(ctx.currentTime + time + 0.45);
+
+                    // Higher harmonic for depth
+                    const osc2 = ctx.createOscillator();
+                    const gain2 = ctx.createGain();
+                    const filter2 = ctx.createBiquadFilter();
+
+                    osc2.connect(filter2);
+                    filter2.connect(gain2);
+                    gain2.connect(ctx.destination);
+
+                    osc2.type = 'sine';
+                    osc2.frequency.value = 400;
+
+                    filter2.type = 'lowpass';
+                    filter2.frequency.value = 600;
+                    filter2.Q.value = 0.5;
+
+                    gain2.gain.setValueAtTime(0, ctx.currentTime + time);
+                    gain2.gain.linearRampToValueAtTime(0.05, ctx.currentTime + time + 0.15);
+                    gain2.gain.linearRampToValueAtTime(0, ctx.currentTime + time + 0.4);
+
+                    osc2.start(ctx.currentTime + time);
+                    osc2.stop(ctx.currentTime + time + 0.45);
+                });
+            } catch (e) {
+                console.error('Error playing code blink sound', e);
+            }
+        }
+
+        // Underdog victory sound - synchronized with scene animations
+        function playUnderdogSound() {
+            const ctx = initAudioContext();
+            if (!ctx) return;
+
+            try {
+                // Dramatic ascending whoosh (synchronized with badge appearing)
+                const whoosh = ctx.createOscillator();
+                const whooshGain = ctx.createGain();
+
+                whoosh.connect(whooshGain);
+                whooshGain.connect(ctx.destination);
+
+                whoosh.type = 'sawtooth';
+                // Rapid ascent from low to high
+                whoosh.frequency.setValueAtTime(100, ctx.currentTime);
+                whoosh.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.7);
+
+                whooshGain.gain.setValueAtTime(0.15, ctx.currentTime);
+                whooshGain.gain.linearRampToValueAtTime(0.25, ctx.currentTime + 0.5);
+                whooshGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.8);
+
+                whoosh.start(ctx.currentTime);
+                whoosh.stop(ctx.currentTime + 0.8);
+
+                // Triumphant fanfare (synchronized with bonus text at t=1.6s)
+                const fanfareNotes = [
+                    { freq: 523.25, time: 1.6, duration: 0.3 },    // C (with bonus text)
+                    { freq: 659.25, time: 1.95, duration: 0.3 },   // E
+                    { freq: 783.99, time: 2.3, duration: 0.6 }     // G (building to X mark)
+                ];
+
+                fanfareNotes.forEach(note => {
+                    // Main note
+                    const osc = ctx.createOscillator();
+                    const gainNode = ctx.createGain();
+
+                    osc.connect(gainNode);
+                    gainNode.connect(ctx.destination);
+
+                    osc.type = 'square';
+                    osc.frequency.value = note.freq;
+
+                    gainNode.gain.setValueAtTime(0.3, ctx.currentTime + note.time);
+                    gainNode.gain.setValueAtTime(0.3, ctx.currentTime + note.time + note.duration - 0.1);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + note.time + note.duration);
+
+                    osc.start(ctx.currentTime + note.time);
+                    osc.stop(ctx.currentTime + note.time + note.duration);
+
+                    // Harmonic layer
+                    const osc2 = ctx.createOscillator();
+                    const gain2 = ctx.createGain();
+
+                    osc2.connect(gain2);
+                    gain2.connect(ctx.destination);
+
+                    osc2.type = 'sine';
+                    osc2.frequency.value = note.freq * 2;
+
+                    gain2.gain.setValueAtTime(0.15, ctx.currentTime + note.time);
+                    gain2.gain.setValueAtTime(0.15, ctx.currentTime + note.time + note.duration - 0.1);
+                    gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + note.time + note.duration);
+
+                    osc2.start(ctx.currentTime + note.time);
+                    osc2.stop(ctx.currentTime + note.time + note.duration);
+                });
+
+                // Magic sparkles (synchronized with X mark appearing at t=2.9s)
+                for (let i = 0; i < 6; i++) {
+                    const sparkle = ctx.createOscillator();
+                    const sparkleGain = ctx.createGain();
+
+                    sparkle.connect(sparkleGain);
+                    sparkleGain.connect(ctx.destination);
+
+                    sparkle.type = 'sine';
+                    const baseFreq = 1500 + Math.random() * 1000;
+                    sparkle.frequency.setValueAtTime(baseFreq, ctx.currentTime + 2.9 + i * 0.08);
+                    sparkle.frequency.exponentialRampToValueAtTime(baseFreq * 1.5, ctx.currentTime + 3.0 + i * 0.08);
+
+                    sparkleGain.gain.setValueAtTime(0.12, ctx.currentTime + 2.9 + i * 0.08);
+                    sparkleGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 3.1 + i * 0.08);
+
+                    sparkle.start(ctx.currentTime + 2.9 + i * 0.08);
+                    sparkle.stop(ctx.currentTime + 3.15 + i * 0.08);
+                }
+            } catch (e) {
+                console.error('Error playing underdog sound', e);
+            }
+        }
+
+        // Realistic stadium celebration chant for winner
+        function playGoalCelebration() {
+            const ctx = initAudioContext();
+            if (!ctx) return;
+
+            try {
+                // Realistic stadium chant with rhythm (4 seconds)
+                const duration = 4.0;
+
+                // Create rhythmic chanting "OH OH OH OHHHHH"
+                const chantPattern = [
+                    { time: 0, duration: 0.3, freq: 450 },
+                    { time: 0.4, duration: 0.3, freq: 480 },
+                    { time: 0.8, duration: 0.3, freq: 450 },
+                    { time: 1.2, duration: 1.0, freq: 500 }, // Longer final "ohhh"
+                    { time: 2.3, duration: 0.3, freq: 450 },
+                    { time: 2.7, duration: 0.3, freq: 480 },
+                    { time: 3.1, duration: 0.3, freq: 450 },
+                    { time: 3.5, duration: 0.5, freq: 500 }
+                ];
+
+                chantPattern.forEach(chant => {
+                    // Create multiple voice layers for crowd effect
+                    for (let voice = 0; voice < 4; voice++) {
+                        const osc = ctx.createOscillator();
+                        const gainNode = ctx.createGain();
+
+                        osc.connect(gainNode);
+                        gainNode.connect(ctx.destination);
+
+                        osc.type = voice < 2 ? 'sine' : 'triangle';
+                        const detune = (Math.random() - 0.5) * 20; // Random detuning for crowd
+                        osc.frequency.value = chant.freq + (voice * 50);
+                        osc.detune.value = detune;
+
+                        const volume = 0.05 + Math.random() * 0.02;
+                        gainNode.gain.setValueAtTime(0, ctx.currentTime + chant.time);
+                        gainNode.gain.linearRampToValueAtTime(volume, ctx.currentTime + chant.time + 0.05);
+                        gainNode.gain.setValueAtTime(volume, ctx.currentTime + chant.time + chant.duration - 0.05);
+                        gainNode.gain.linearRampToValueAtTime(0, ctx.currentTime + chant.time + chant.duration);
+
+                        osc.start(ctx.currentTime + chant.time);
+                        osc.stop(ctx.currentTime + chant.time + chant.duration);
+                    }
+                });
+
+                // Add clapping rhythm
+                const clapTimes = [0, 0.4, 0.8, 2.3, 2.7, 3.1];
+                clapTimes.forEach(time => {
+                    // Create noise burst for clap
+                    const bufferSize = ctx.sampleRate * 0.05;
+                    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                    const data = buffer.getChannelData(0);
+                    for (let i = 0; i < bufferSize; i++) {
+                        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.01));
+                    }
+
+                    const clap = ctx.createBufferSource();
+                    clap.buffer = buffer;
+                    const clapGain = ctx.createGain();
+                    const clapFilter = ctx.createBiquadFilter();
+
+                    clap.connect(clapFilter);
+                    clapFilter.connect(clapGain);
+                    clapGain.connect(ctx.destination);
+
+                    clapFilter.type = 'bandpass';
+                    clapFilter.frequency.value = 1500;
+                    clapFilter.Q.value = 1;
+
+                    clapGain.gain.value = 0.15;
+
+                    clap.start(ctx.currentTime + time);
+                });
+            } catch (e) {
+                console.error('Error playing stadium celebration', e);
+            }
+        }
+
+        // Stadium cheers for winner
+        let currentStadiumCheer = null;
+        function playStadiumCheers() {
+            stopStadiumCheers(); // Stop any existing cheers
+
+            try {
+                currentStadiumCheer = new Audio('./Sounds/crowd-cheering-379666.mp3');
+                currentStadiumCheer.volume = 0.5;
+                currentStadiumCheer.play().catch(e => console.error('Error playing stadium cheers', e));
+            } catch (e) {
+                console.error('Error playing stadium cheers', e);
+            }
+        }
+
+        function stopStadiumCheers() {
+            if (currentStadiumCheer) {
+                try {
+                    currentStadiumCheer.pause();
+                    currentStadiumCheer.currentTime = 0;
+                } catch (e) {
+                    // Already stopped
+                }
+                currentStadiumCheer = null;
+            }
+        }
+
+        // Wheel of Fortune spinning sound
+        let wheelSoundInterval = null;
+        function playWheelSpinSound() {
+            const ctx = initAudioContext();
+            if (!ctx) return;
+
+            // Clear any existing wheel sound
+            if (wheelSoundInterval) {
+                clearInterval(wheelSoundInterval);
+            }
+
+            const duration = 3500; // Match scroll animation duration
+            const startTime = Date.now();
+
+            // Function to play a single tick
+            function playTick() {
+                try {
+                    const osc = ctx.createOscillator();
+                    const gainNode = ctx.createGain();
+
+                    osc.connect(gainNode);
+                    gainNode.connect(ctx.destination);
+
+                    // Sharp tick sound
+                    osc.frequency.value = 800;
+                    osc.type = 'square';
+
+                    gainNode.gain.setValueAtTime(0.15, ctx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.03);
+
+                    osc.start(ctx.currentTime);
+                    osc.stop(ctx.currentTime + 0.03);
+                } catch (e) {
+                    console.error('Error playing tick', e);
+                }
+            }
+
+            // Calculate interval based on elapsed time (starts fast, slows down)
+            function scheduleNextTick() {
+                const elapsed = Date.now() - startTime;
+                if (elapsed >= duration) {
+                    clearInterval(wheelSoundInterval);
+                    wheelSoundInterval = null;
+                    return;
+                }
+
+                // Calculate delay - starts at 40ms, gradually increases to 200ms
+                const progress = elapsed / duration;
+                const delay = 40 + (progress * progress * 160); // Quadratic slowdown
+
+                playTick();
+                wheelSoundInterval = setTimeout(scheduleNextTick, delay);
+            }
+
+            // Start the ticking
+            scheduleNextTick();
+        }
+
+        function stopWheelSpinSound() {
+            if (wheelSoundInterval) {
+                clearInterval(wheelSoundInterval);
+                wheelSoundInterval = null;
+            }
+        }
+
+        function typeWriter(text, elementId, speed, onComplete) {
+            const element = document.getElementById(elementId);
+            element.value = '';
+            element.textContent = '';
+            let i = 0;
+            let localTypingSound = null;
+
+            // Stop any previous typing sound before starting a new one
+            if (currentTypingSound) {
+                try {
+                    currentTypingSound.pause();
+                    currentTypingSound.currentTime = 0;
+                } catch (e) {
+                    console.error('Error stopping previous typing sound', e);
+                }
+            }
+
+            // Create a new Audio object for this typing session
+            try {
+                localTypingSound = new Audio('./Sounds/typing-sound-effect-336781 (mp3cut).mp3');
+                localTypingSound.volume = 1.0;
+                localTypingSound.play().catch(e => console.error('Error playing typing sound', e));
+                currentTypingSound = localTypingSound;
+            } catch (e) {
+                console.error('Error starting typing sound', e);
+            }
+
+            function type() {
+                if (i < text.length) {
+                    const char = text.charAt(i);
+                    if (element.tagName === 'INPUT') {
+                        element.value += char;
+                    } else {
+                        element.textContent += char;
+                    }
+                    i++;
+                    setTimeout(type, speed);
+                } else {
+                    // Stop typing sound with a small delay after typing is complete
+                    setTimeout(() => {
+                        if (localTypingSound && !localTypingSound.paused) {
+                            try {
+                                localTypingSound.pause();
+                                localTypingSound.currentTime = 0;
+                            } catch (e) {
+                                console.error('Error stopping typing sound', e);
+                            }
+                        }
+                    }, 300);
+
+                    // Call completion callback if provided
+                    if (onComplete) {
+                        onComplete();
+                    }
+                }
+            }
+
+            type();
+        }
+
+        function createConfetti() {
+            const colors = ['#10b981', '#059669', '#34d399', '#fbbf24', '#f59e0b'];
+            
+            confettiInterval = setInterval(() => {
+                for (let i = 0; i < 3; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                    confetti.style.animationDuration = (2 + Math.random() * 2) + 's';
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 4000);
+                }
+            }, 200);
+        }
+
+        function nextScene() {
+            if (currentScene < scenes.length - 1) {
+                currentScene++;
+                showScene(currentScene);
+                setTimeout(nextScene, scenes[currentScene].duration);
+            } else {
+                setTimeout(() => {
+                    currentScene = 0;
+                    showScene(currentScene);
+                    setTimeout(nextScene, scenes[currentScene].duration);
+                }, 2000);
+            }
+        }
+
+        // Initialize audio on first user interaction
+        document.addEventListener('click', function initAudio() {
+            initAudioContext();
+            // Remove the listener after first click
+            document.removeEventListener('click', initAudio);
+        }, { once: true });
+
+        // Also try to initialize audio immediately
+        initAudioContext();
+
+        // Start
+        showScene(0);
+        setTimeout(nextScene, scenes[0].duration);
+    </script>
+</body>
+</html>

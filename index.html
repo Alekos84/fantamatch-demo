@@ -970,16 +970,26 @@
         @media (max-width: 768px) {
             body {
                 height: 100dvh; /* Use dynamic viewport height for mobile */
+                overflow-x: hidden;
+                overflow-y: hidden;
             }
 
             .container {
-                padding: 10px !important;
+                padding: 0 !important;
                 max-width: 100%;
+                width: 100vw;
                 height: 100dvh;
+                left: 0;
+                right: 0;
+                margin: 0;
             }
 
             .scene {
                 padding: 10px !important;
+                left: 0 !important;
+                right: 0 !important;
+                width: 100vw !important;
+                box-sizing: border-box;
             }
 
             .logo {

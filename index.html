@@ -968,181 +968,287 @@
 
         /* Mobile Responsive Styles */
         @media (max-width: 768px) {
+            body {
+                height: 100dvh; /* Use dynamic viewport height for mobile */
+            }
+
             .container {
-                padding: 20px;
+                padding: 10px !important;
                 max-width: 100%;
+                height: 100dvh;
+            }
+
+            .scene {
+                padding: 10px !important;
             }
 
             .logo {
-                font-size: 2.5rem !important;
-                padding: 15px 30px !important;
+                font-size: 2rem !important;
+                padding: 10px 20px !important;
+                gap: 10px !important;
             }
 
             .logo span {
-                font-size: 3rem !important;
+                font-size: 2.5rem !important;
             }
 
             .form-card {
-                padding: 30px 20px !important;
-                max-width: 90% !important;
+                padding: 20px 15px !important;
+                max-width: 95% !important;
+                margin: 0 auto !important;
             }
 
             .form-card h2 {
-                font-size: 1.5rem !important;
+                font-size: 1.3rem !important;
+                margin-bottom: 15px !important;
+            }
+
+            .form-group {
+                margin-bottom: 12px !important;
             }
 
             .form-group label {
-                font-size: 0.9rem !important;
+                font-size: 0.85rem !important;
+                margin-bottom: 5px !important;
             }
 
             .form-group input {
-                font-size: 1rem !important;
-                padding: 12px !important;
+                font-size: 0.95rem !important;
+                padding: 10px !important;
             }
 
             .create-btn {
-                font-size: 1rem !important;
-                padding: 12px 30px !important;
+                font-size: 0.95rem !important;
+                padding: 10px 25px !important;
+                margin-top: 10px !important;
             }
 
             .code-box {
-                width: 90% !important;
-                padding: 30px !important;
-                font-size: 1.2rem !important;
-            }
-
-            .team-selection {
-                width: 90% !important;
+                width: 95% !important;
                 padding: 20px !important;
-            }
-
-            .team-selection h3 {
-                font-size: 1.2rem !important;
-            }
-
-            .team-item {
-                padding: 12px !important;
-                font-size: 0.9rem !important;
-            }
-
-            .match-card {
-                padding: 25px !important;
-                max-width: 90% !important;
-            }
-
-            .match-card h2 {
-                font-size: 1.3rem !important;
-            }
-
-            .team-name {
                 font-size: 1rem !important;
             }
 
-            .score {
-                font-size: 2rem !important;
+            .team-selection {
+                width: 95% !important;
+                padding: 15px !important;
+                max-height: 80vh !important;
             }
 
-            .card-container {
-                width: 120px !important;
-                height: 160px !important;
+            .team-selection h3 {
+                font-size: 1.1rem !important;
+                margin-bottom: 10px !important;
             }
 
-            .card {
-                font-size: 2rem !important;
+            .teams-list {
+                max-height: 50vh !important;
             }
 
-            .card-label {
-                font-size: 0.8rem !important;
-            }
-
-            .standings-container {
-                width: 90% !important;
-                max-width: 500px !important;
-            }
-
-            .standings-container h2 {
-                font-size: 1.3rem !important;
-            }
-
-            .standing-item {
-                padding: 12px !important;
+            .team-item {
+                padding: 10px !important;
                 font-size: 0.85rem !important;
             }
 
-            .winner-card {
-                padding: 30px !important;
-                max-width: 90% !important;
+            .match-card {
+                padding: 20px 15px !important;
+                max-width: 95% !important;
             }
 
-            .winner-card h1 {
-                font-size: 2rem !important;
+            .match-card h2 {
+                font-size: 1.1rem !important;
+                margin-bottom: 15px !important;
             }
 
-            .trophy {
-                font-size: 4rem !important;
+            .team-name {
+                font-size: 0.9rem !important;
             }
 
-            .winner-name {
-                font-size: 1.5rem !important;
+            .score {
+                font-size: 1.8rem !important;
             }
 
-            .register-card {
-                padding: 30px 20px !important;
-                max-width: 90% !important;
+            .card-container {
+                width: 100px !important;
+                height: 140px !important;
+                margin: 10px !important;
             }
 
-            .register-card h2 {
-                font-size: 1.3rem !important;
+            .card {
+                font-size: 1.8rem !important;
             }
 
-            .url-input {
+            .card-label {
+                font-size: 0.75rem !important;
+                padding: 6px !important;
+            }
+
+            .standings-container {
+                width: 95% !important;
+                max-width: 100% !important;
+                max-height: 85vh !important;
+            }
+
+            .standings-container h2 {
                 font-size: 1.2rem !important;
                 padding: 12px !important;
             }
 
+            .standings-list {
+                max-height: 65vh !important;
+            }
+
+            .standing-item {
+                padding: 10px 8px !important;
+                font-size: 0.8rem !important;
+            }
+
+            .winner-card {
+                padding: 25px 15px !important;
+                max-width: 95% !important;
+            }
+
+            .winner-card h1 {
+                font-size: 1.6rem !important;
+                margin-bottom: 15px !important;
+            }
+
+            .trophy {
+                font-size: 3.5rem !important;
+                margin: 15px 0 !important;
+            }
+
+            .winner-name {
+                font-size: 1.3rem !important;
+            }
+
+            .register-card {
+                padding: 25px 15px !important;
+                max-width: 95% !important;
+            }
+
+            .register-card h2 {
+                font-size: 1.2rem !important;
+                margin-bottom: 15px !important;
+            }
+
+            .url-input {
+                font-size: 1.1rem !important;
+                padding: 10px !important;
+            }
+
             .stamp {
-                width: 80px !important;
-                height: 80px !important;
-                font-size: 0.7rem !important;
+                width: 70px !important;
+                height: 70px !important;
+                font-size: 0.65rem !important;
             }
 
             .cursor {
-                width: 40px !important;
-                height: 40px !important;
+                width: 35px !important;
+                height: 35px !important;
             }
 
             .note-text {
-                font-size: 0.8rem !important;
-                padding: 8px 15px !important;
+                font-size: 0.75rem !important;
+                padding: 6px 12px !important;
+            }
+
+            .confetti {
+                width: 8px !important;
+                height: 8px !important;
             }
         }
 
         @media (max-width: 480px) {
+            .container {
+                padding: 5px !important;
+            }
+
             .logo {
-                font-size: 2rem !important;
-                padding: 12px 25px !important;
+                font-size: 1.6rem !important;
+                padding: 8px 15px !important;
             }
 
             .logo span {
-                font-size: 2.5rem !important;
+                font-size: 2rem !important;
+            }
+
+            .form-card {
+                padding: 15px 10px !important;
             }
 
             .form-card h2 {
-                font-size: 1.3rem !important;
+                font-size: 1.1rem !important;
             }
 
-            .standings-container h2,
-            .winner-card h1,
-            .register-card h2 {
-                font-size: 1.2rem !important;
+            .form-group input {
+                font-size: 0.9rem !important;
+                padding: 8px !important;
+            }
+
+            .create-btn {
+                font-size: 0.9rem !important;
+                padding: 8px 20px !important;
+            }
+
+            .team-selection h3 {
+                font-size: 1rem !important;
+            }
+
+            .team-item {
+                padding: 8px !important;
+                font-size: 0.8rem !important;
+            }
+
+            .match-card h2 {
+                font-size: 1rem !important;
             }
 
             .team-name {
-                font-size: 0.9rem !important;
+                font-size: 0.85rem !important;
             }
 
             .score {
                 font-size: 1.5rem !important;
+            }
+
+            .card-container {
+                width: 80px !important;
+                height: 110px !important;
+                margin: 8px !important;
+            }
+
+            .card {
+                font-size: 1.5rem !important;
+            }
+
+            .standings-container h2 {
+                font-size: 1.1rem !important;
+                padding: 10px !important;
+            }
+
+            .standing-item {
+                padding: 8px 6px !important;
+                font-size: 0.75rem !important;
+            }
+
+            .winner-card h1 {
+                font-size: 1.4rem !important;
+            }
+
+            .trophy {
+                font-size: 3rem !important;
+            }
+
+            .winner-name {
+                font-size: 1.1rem !important;
+            }
+
+            .register-card h2 {
+                font-size: 1.1rem !important;
+            }
+
+            .url-input {
+                font-size: 1rem !important;
             }
         }
     </style>

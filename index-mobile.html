@@ -1571,6 +1571,11 @@
                 stopStadiumCheers();
 
                 setTimeout(() => {
+                    // Double-check music is stopped before playing stamp
+                    stopEpicMusic();
+                    stopStadiumCheers();
+
+                    console.log('Scene 1: Playing stamp sound');
                     playStampSound();
                 }, 800); // Sync with logo stopping
             }
@@ -1893,13 +1898,19 @@
         }
 
         function playStampSound() {
+            console.log('playStampSound() called');
             // Initialize/resume AudioContext for mobile compatibility
             initAudioContext();
 
             try {
                 const sound = stampSound.cloneNode();
                 sound.volume = 1.0;
-                sound.play().catch(e => console.error('Error playing stamp sound', e));
+                console.log('Attempting to play stamp sound, volume:', sound.volume);
+                sound.play().then(() => {
+                    console.log('Stamp sound playing successfully');
+                }).catch(e => {
+                    console.error('Error playing stamp sound', e);
+                });
             } catch (e) {
                 console.error('Error playing stamp sound', e);
             }
@@ -1966,6 +1977,7 @@
 
         // Epic music for standings - Use pre-loaded audio for mobile compatibility
         function playEpicMusic() {
+            console.log('playEpicMusic() called');
             stopEpicMusic(); // Stop any existing music
 
             // Initialize/resume AudioContext for mobile compatibility
@@ -1974,18 +1986,24 @@
             try {
                 // Reset to beginning in case it was played before
                 epicMusicSound.currentTime = 0;
-                epicMusicSound.play().catch(e => console.error('Error playing epic music', e));
+                epicMusicSound.play().then(() => {
+                    console.log('Epic music playing successfully');
+                }).catch(e => {
+                    console.error('Error playing epic music', e);
+                });
             } catch (e) {
                 console.error('Error playing epic music', e);
             }
         }
 
         function stopEpicMusic() {
+            console.log('stopEpicMusic() called');
             try {
                 epicMusicSound.pause();
                 epicMusicSound.currentTime = 0;
+                console.log('Epic music stopped, paused:', epicMusicSound.paused);
             } catch (e) {
-                // Already stopped
+                console.error('Error stopping epic music', e);
             }
         }
 

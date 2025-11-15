@@ -1526,10 +1526,10 @@
                     cardClone.style.animation = 'none';
                     cardClone.style.transition = 'none';
 
-                    // The rect dimensions are already scaled by 1.5
-                    // We need to divide by 1.5 to get the original dimensions
-                    // Then apply scale(1.5) to maintain text size
-                    const scale = 1.5;
+                    // The rect dimensions are already scaled by 1.15
+                    // We need to divide by 1.15 to get the original dimensions
+                    // Then apply scale(1.15) to maintain text size
+                    const scale = 1.15;
                     const unscaledWidth = rect.width / scale;
                     const unscaledHeight = rect.height / scale;
 
@@ -1538,7 +1538,7 @@
                     cardClone.style.top = rect.top + 'px';
                     cardClone.style.width = unscaledWidth + 'px';
                     cardClone.style.height = unscaledHeight + 'px';
-                    cardClone.style.transform = 'scale(1.5)';
+                    cardClone.style.transform = 'scale(1.15)';
                     cardClone.style.transformOrigin = 'top left';
                     cardClone.style.zIndex = '3000';
                     cardClone.style.opacity = '1';
@@ -2447,6 +2447,9 @@
         }
 
         function typeWriter(text, elementId, speed, onComplete) {
+            // Initialize/resume AudioContext for mobile compatibility
+            initAudioContext();
+
             const element = document.getElementById(elementId);
             element.value = '';
             element.textContent = '';

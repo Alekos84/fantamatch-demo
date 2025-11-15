@@ -385,7 +385,7 @@
                 transform: scale(1.0) translateY(0);
             }
             to {
-                transform: scale(1.0) translateY(-280px);
+                transform: scale(1.15) translateY(-280px);
             }
         }
 
@@ -634,7 +634,7 @@
             font-size: 16px;
             color: #f59e0b;
             font-weight: bold;
-            margin-top: 140px;
+            margin-top: 170px;
             opacity: 0;
             animation: fadeIn 0.5s ease 1.5s forwards;
         }
@@ -1942,6 +1942,9 @@
         function playEpicMusic() {
             stopEpicMusic(); // Stop any existing music
 
+            // Initialize/resume AudioContext for mobile compatibility
+            initAudioContext();
+
             try {
                 currentEpicMusic = new Audio('./Sounds/orchestral-win-331233.mp3');
                 currentEpicMusic.volume = 0.6;
@@ -2343,6 +2346,9 @@
         let currentStadiumCheer = null;
         function playStadiumCheers() {
             stopStadiumCheers(); // Stop any existing cheers
+
+            // Initialize/resume AudioContext for mobile compatibility
+            initAudioContext();
 
             try {
                 currentStadiumCheer = new Audio('./Sounds/crowd-cheering-379666.mp3');

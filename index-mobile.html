@@ -1566,6 +1566,10 @@
 
             // Scene 1: Logo - play stamp sound when rotation completes
             if (index === 0) {
+                // Force stop all music/sounds to ensure clean start
+                stopEpicMusic();
+                stopStadiumCheers();
+
                 setTimeout(() => {
                     playStampSound();
                 }, 800); // Sync with logo stopping
@@ -1798,6 +1802,10 @@
 
             // Scene 14: Registration typewriter
             if (index === 15) {
+                // Stop any lingering music/sounds
+                stopEpicMusic();
+                stopStadiumCheers();
+
                 setTimeout(() => {
                     typeWriter('fantamatch.com', 'registerUrl', 80, () => {
                         // Play stamp sound when typing is complete

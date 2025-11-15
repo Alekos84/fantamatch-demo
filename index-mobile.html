@@ -1080,7 +1080,7 @@
                 <div class="result-badge result-win" id="resultBadge11" style="opacity: 0;">✓ UNDERDOG VINCE!</div>
                 <div class="points-display" id="resultPoints11" style="font-size: 36px; opacity: 0;">+18 punti</div>
                 <div class="bonus-text" id="bonusText11" style="opacity: 0;">✨ Bonus: -1 Cartellino Giallo! ✨</div>
-                <div class="yellow-card-container" id="yellowCardContainer11" style="position: relative; height: 140px; opacity: 0; margin-top: 30px;">
+                <div class="yellow-card-container" id="yellowCardContainer11" style="position: relative; height: 140px; opacity: 0; margin-top: 50px;">
                     <div class="yellow-card" id="cardToRemove" style="transform: scale(2); opacity: 1;"></div>
                     <div class="x-mark" id="xMark">✗</div>
                 </div>
@@ -1105,7 +1105,7 @@
                 <div class="points-display" id="resultPoints9" style="font-size: 36px; opacity: 0; margin-bottom: 50px;">0 punti</div>
                 <div class="red-card-container" id="redCardContainer9" style="margin-top: 60px; opacity: 0;">
                     <div class="red-card" id="redCard"></div>
-                    <div class="card-label" style="margin-top: 250px;">ELIMINATO ⚠️</div>
+                    <div class="card-label" style="margin-top: 220px;">ELIMINATO ⚠️</div>
                 </div>
             </div>
         </div>
@@ -1628,7 +1628,7 @@
 
                     // Center cursor on button - mobile optimized
                     cursor.style.left = (rect.left + rect.width / 2 - 17) + 'px';
-                    cursor.style.top = (rect.top - 10) + 'px';
+                    cursor.style.top = (rect.top - 5) + 'px';
                     cursor.style.opacity = '1';
 
                     setTimeout(() => {
@@ -1644,19 +1644,20 @@
 
             // Scene 5: Win with climb message - sequential animations (card from previous scene remains visible)
             if (index === 6) {
-                const badge = document.getElementById('resultBadge5');
-                badge.style.opacity = '1';
-                badge.style.transition = 'opacity 0.8s ease';
                 setTimeout(() => {
-                    const points = document.getElementById('resultPoints5');
-                    points.style.opacity = '1';
-                    points.style.transition = 'opacity 0.8s ease';
+                    const badge = document.getElementById('resultBadge5');
+                    badge.style.opacity = '1';
+
                     setTimeout(() => {
-                        const subtitle = document.getElementById('resultSubtitle5');
-                        subtitle.style.opacity = '1';
-                        subtitle.style.transition = 'opacity 0.8s ease';
-                    }, 800);
-                }, 800);
+                        const points = document.getElementById('resultPoints5');
+                        points.style.opacity = '1';
+
+                        setTimeout(() => {
+                            const subtitle = document.getElementById('resultSubtitle5');
+                            subtitle.style.opacity = '1';
+                        }, 500); // Subtitle appears 500ms after points
+                    }, 500); // Points appear 500ms after badge
+                }, 300); // Badge appears 300ms after scene starts
             }
 
             // Scene 7: Draw result - sequential animations (card from previous scene remains visible)

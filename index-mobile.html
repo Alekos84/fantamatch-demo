@@ -1059,7 +1059,7 @@
                 <div class="points-display" id="resultPoints7" style="font-size: 36px; opacity: 0; margin-bottom: 50px;">+6 punti</div>
                 <div class="yellow-card-container" id="yellowCardContainer7" style="margin-top: 60px; opacity: 0;">
                     <div class="yellow-card" id="yellowCard"></div>
-                    <div class="card-label">+1 Cartellino Giallo ⚠️</div>
+                    <div class="card-label" style="margin-top: 250px;">+1 Cartellino Giallo ⚠️</div>
                 </div>
             </div>
         </div>
@@ -1105,7 +1105,7 @@
                 <div class="points-display" id="resultPoints9" style="font-size: 36px; opacity: 0; margin-bottom: 50px;">0 punti</div>
                 <div class="red-card-container" id="redCardContainer9" style="margin-top: 60px; opacity: 0;">
                     <div class="red-card" id="redCard"></div>
-                    <div class="card-label">ELIMINATO ⚠️</div>
+                    <div class="card-label" style="margin-top: 250px;">ELIMINATO ⚠️</div>
                 </div>
             </div>
         </div>
@@ -1839,10 +1839,16 @@
             }
         }
 
-        // Audio files for sound effects
+        // Audio files for sound effects - Pre-load ALL audio files for mobile compatibility
         const typingSound = new Audio('./Sounds/typing-sound-effect-336781 (mp3cut).mp3');
         const stampSound = new Audio('./Sounds/470710__ifekry__traditional-stamp.wav');
         const notificationSound = new Audio('./Sounds/notification-5-371504.mp3');
+        const epicMusicSound = new Audio('./Sounds/orchestral-win-331233.mp3');
+        const stadiumCheersSound = new Audio('./Sounds/crowd-cheering-379666.mp3');
+
+        // Pre-configure audio for mobile - set volumes
+        epicMusicSound.volume = 0.6;
+        stadiumCheersSound.volume = 0.5;
 
         // Create global AudioContext
         let audioContext = null;
@@ -1865,6 +1871,9 @@
 
         // Sound effects functions
         function playKeyboardSound() {
+            // Initialize/resume AudioContext for mobile compatibility
+            initAudioContext();
+
             try {
                 const sound = typingSound.cloneNode();
                 sound.volume = 1.0;
@@ -1875,6 +1884,9 @@
         }
 
         function playStampSound() {
+            // Initialize/resume AudioContext for mobile compatibility
+            initAudioContext();
+
             try {
                 const sound = stampSound.cloneNode();
                 sound.volume = 1.0;
@@ -1885,6 +1897,9 @@
         }
 
         function playNotificationSound() {
+            // Initialize/resume AudioContext for mobile compatibility
+            initAudioContext();
+
             try {
                 const sound = notificationSound.cloneNode();
                 sound.volume = 0.4;
@@ -1928,6 +1943,9 @@
         }
 
         function playWhatsAppSound() {
+            // Initialize/resume AudioContext for mobile compatibility
+            initAudioContext();
+
             try {
                 const sound = notificationSound.cloneNode();
                 sound.volume = 0.4;
@@ -1937,8 +1955,7 @@
             }
         }
 
-        // Epic music for standings
-        let currentEpicMusic = null;
+        // Epic music for standings - Use pre-loaded audio for mobile compatibility
         function playEpicMusic() {
             stopEpicMusic(); // Stop any existing music
 
@@ -1946,23 +1963,20 @@
             initAudioContext();
 
             try {
-                currentEpicMusic = new Audio('./Sounds/orchestral-win-331233.mp3');
-                currentEpicMusic.volume = 0.6;
-                currentEpicMusic.play().catch(e => console.error('Error playing epic music', e));
+                // Reset to beginning in case it was played before
+                epicMusicSound.currentTime = 0;
+                epicMusicSound.play().catch(e => console.error('Error playing epic music', e));
             } catch (e) {
                 console.error('Error playing epic music', e);
             }
         }
 
         function stopEpicMusic() {
-            if (currentEpicMusic) {
-                try {
-                    currentEpicMusic.pause();
-                    currentEpicMusic.currentTime = 0;
-                } catch (e) {
-                    // Already stopped
-                }
-                currentEpicMusic = null;
+            try {
+                epicMusicSound.pause();
+                epicMusicSound.currentTime = 0;
+            } catch (e) {
+                // Already stopped
             }
         }
 
@@ -2342,8 +2356,7 @@
             }
         }
 
-        // Stadium cheers for winner
-        let currentStadiumCheer = null;
+        // Stadium cheers for winner - Use pre-loaded audio for mobile compatibility
         function playStadiumCheers() {
             stopStadiumCheers(); // Stop any existing cheers
 
@@ -2351,23 +2364,20 @@
             initAudioContext();
 
             try {
-                currentStadiumCheer = new Audio('./Sounds/crowd-cheering-379666.mp3');
-                currentStadiumCheer.volume = 0.5;
-                currentStadiumCheer.play().catch(e => console.error('Error playing stadium cheers', e));
+                // Reset to beginning in case it was played before
+                stadiumCheersSound.currentTime = 0;
+                stadiumCheersSound.play().catch(e => console.error('Error playing stadium cheers', e));
             } catch (e) {
                 console.error('Error playing stadium cheers', e);
             }
         }
 
         function stopStadiumCheers() {
-            if (currentStadiumCheer) {
-                try {
-                    currentStadiumCheer.pause();
-                    currentStadiumCheer.currentTime = 0;
-                } catch (e) {
-                    // Already stopped
-                }
-                currentStadiumCheer = null;
+            try {
+                stadiumCheersSound.pause();
+                stadiumCheersSound.currentTime = 0;
+            } catch (e) {
+                // Already stopped
             }
         }
 
@@ -2528,14 +2538,43 @@
             }
         }
 
-        // Initialize audio on first user interaction
+        // Initialize audio on first user interaction - Critical for iOS
         document.addEventListener('click', function initAudio() {
             initAudioContext();
-            // Remove the listener after first click
-            document.removeEventListener('click', initAudio);
+
+            // Prime all audio elements for mobile by loading them
+            // This is critical for iOS Safari which requires user interaction
+            try {
+                const audioElements = [
+                    typingSound,
+                    stampSound,
+                    notificationSound,
+                    epicMusicSound,
+                    stadiumCheersSound
+                ];
+
+                audioElements.forEach(audio => {
+                    // Load the audio to prepare it for playback
+                    audio.load();
+
+                    // Optional: play and immediately pause to "unlock" audio on iOS
+                    // This creates a promise that we catch to prevent errors
+                    const playPromise = audio.play();
+                    if (playPromise !== undefined) {
+                        playPromise.then(() => {
+                            audio.pause();
+                            audio.currentTime = 0;
+                        }).catch(e => {
+                            // Ignore errors from this priming attempt
+                        });
+                    }
+                });
+            } catch (e) {
+                console.error('Error priming audio', e);
+            }
         }, { once: true });
 
-        // Also try to initialize audio immediately
+        // Also try to initialize audio immediately (won't work on iOS but helps on desktop)
         initAudioContext();
 
         // Start

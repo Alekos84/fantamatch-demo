@@ -297,6 +297,9 @@
             z-index: 1000;
             opacity: 0;
             transition: all 0.5s ease;
+            left: 50%;
+            top: -50px;
+            transform: translateX(-50%);
         }
 
         /* WhatsApp sharing with curved lines */
@@ -382,7 +385,7 @@
                 transform: scale(1.0) translateY(0);
             }
             to {
-                transform: scale(1.0) translateY(-200px);
+                transform: scale(1.0) translateY(-280px);
             }
         }
 
@@ -631,7 +634,7 @@
             font-size: 16px;
             color: #f59e0b;
             font-weight: bold;
-            margin-top: 120px;
+            margin-top: 140px;
             opacity: 0;
             animation: fadeIn 0.5s ease 1.5s forwards;
         }
@@ -857,7 +860,7 @@
         .underdog-badge-center {
             position: absolute;
             top: 50%;
-            left: 50%;
+            left: 60%;
             transform: translate(-50%, -50%);
             background: linear-gradient(135deg, #ef4444 0%, #f59e0b 100%);
             color: white;
@@ -1053,8 +1056,8 @@
         <div class="scene" id="scene7">
             <div class="result-container">
                 <div class="result-badge result-draw" id="resultBadge7" style="opacity: 0;">PAREGGIO</div>
-                <div class="points-display" id="resultPoints7" style="font-size: 36px; opacity: 0; margin-top: 10px; margin-bottom: 35px;">+6 punti</div>
-                <div class="yellow-card-container" id="yellowCardContainer7" style="margin-top: 50px; opacity: 0;">
+                <div class="points-display" id="resultPoints7" style="font-size: 36px; opacity: 0; margin-bottom: 50px;">+6 punti</div>
+                <div class="yellow-card-container" id="yellowCardContainer7" style="margin-top: 60px; opacity: 0;">
                     <div class="yellow-card" id="yellowCard"></div>
                     <div class="card-label">+1 Cartellino Giallo ⚠️</div>
                 </div>
@@ -1099,8 +1102,8 @@
         <div class="scene" id="scene9">
             <div class="result-container">
                 <div class="result-badge result-loss" id="resultBadge9" style="opacity: 0;">✗ SCONFITTA</div>
-                <div class="points-display" id="resultPoints9" style="font-size: 36px; opacity: 0; margin-top: 10px; margin-bottom: 35px;">0 punti</div>
-                <div class="red-card-container" id="redCardContainer9" style="margin-top: 50px; opacity: 0;">
+                <div class="points-display" id="resultPoints9" style="font-size: 36px; opacity: 0; margin-bottom: 50px;">0 punti</div>
+                <div class="red-card-container" id="redCardContainer9" style="margin-top: 60px; opacity: 0;">
                     <div class="red-card" id="redCard"></div>
                     <div class="card-label">ELIMINATO ⚠️</div>
                 </div>

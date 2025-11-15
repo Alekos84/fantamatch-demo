@@ -1949,7 +1949,7 @@
 
             try {
                 const sound = notificationSound.cloneNode();
-                sound.volume = 0.4;
+                sound.volume = 1.0; // Maximum volume for mobile
                 sound.play().catch(e => console.error('Error playing WhatsApp sound', e));
             } catch (e) {
                 console.error('Error playing WhatsApp sound', e);

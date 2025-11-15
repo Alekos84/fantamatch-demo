@@ -1626,9 +1626,9 @@
                     const cursor = document.getElementById('tournamentCursor');
                     const rect = btn.getBoundingClientRect();
 
-                    // Center cursor on button
-                    cursor.style.left = (rect.left + rect.width / 2 - 300) + 'px';
-                    cursor.style.top = (rect.top + rect.height / 2 - 30) + 'px';
+                    // Center cursor on button - mobile optimized
+                    cursor.style.left = (rect.left + rect.width / 2 - 17) + 'px';
+                    cursor.style.top = (rect.top - 45) + 'px';
                     cursor.style.opacity = '1';
 
                     setTimeout(() => {
